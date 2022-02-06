@@ -34,21 +34,21 @@ func (s *State) getFiltered() []string {
 
 func (s *State) updateFilter(flt string) {
 	s.mu.Lock()
-	s.mu.Unlock()
+	defer s.mu.Unlock()
 
 	s.filter = flt
 }
 
 func (s *State) pushToFilter(flt string) {
 	s.mu.Lock()
-	s.mu.Unlock()
+	defer s.mu.Unlock()
 
 	s.filter += flt
 }
 
 func (s *State) popFromFilter() {
 	s.mu.Lock()
-	s.mu.Unlock()
+	defer s.mu.Unlock()
 
 	if len(s.filter) > 0 {
 		s.filter = s.filter[:len(s.filter)-1]
@@ -61,6 +61,8 @@ func (s *State) selectPrevious() {
 
 	if s.currentOpt > 0 {
 		s.currentOpt -= 1
+	} else {
+		s.currentOpt = 0
 	}
 }
 
@@ -70,13 +72,27 @@ func (s *State) selectNext() {
 
 	if s.currentOpt < len(s.opts)-1 {
 		s.currentOpt += 1
+	} else {
+		s.currentOpt = len(s.opts) - 1
 	}
+}
+
+func (s *State) getCurrentOpt() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	max := len(s.getFiltered()) - 1
+	if s.currentOpt > max {
+		return max
+	}
+	return s.currentOpt
 }
 
 func (s *State) getSelected() string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	out := s.opts[s.currentOpt]
+	flt := s.getFiltered()
+	out := flt[s.getCurrentOpt()]
 	return out
 }

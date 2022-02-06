@@ -69,7 +69,7 @@ func update(state *State, ui *Ui) {
 			continue
 		}
 		switch i.Rawcode {
-		case KeyEnter, KeyTab:
+		case KeyTab, KeyEnter:
 			ui.toggleWindow(state)
 			ui.systemInteractOut(state.getSelected())
 		case KeyUp:
