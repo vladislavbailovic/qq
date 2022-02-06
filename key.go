@@ -13,14 +13,56 @@ const (
 	KeyDown      uint16 = 65364
 )
 
+type counterState int
+
+const (
+	StateReady counterState = iota
+	StatePending
+	StateDone
+)
+
+type ctrlCounter struct {
+	hit   int
+	state counterState
+}
+
+func (cc *ctrlCounter) update(in hook.Event) {
+	if in.Kind != hook.KeyDown {
+		return
+	}
+	if in.Rawcode != KeyCtrl {
+		cc.reset()
+		return
+	}
+
+	if !cc.isDone() {
+		cc.state = StatePending
+		cc.hit += 1
+		if cc.hit > 2 {
+			cc.state = StateDone
+		}
+	}
+}
+
+func (cc *ctrlCounter) reset() {
+	cc.state = StateReady
+	cc.hit = 0
+}
+
+func (cc ctrlCounter) isDone() bool {
+	return cc.state == StateDone
+}
+
 func update(state *State, ui *Ui) {
 	s := hook.Start()
-	isCtrl := false
+	cc := ctrlCounter{}
 	for {
 		i := <-s
 
-		if i.Rawcode == KeyCtrl {
-			isCtrl = i.Kind == hook.KeyDown
+		cc.update(i)
+		if cc.isDone() {
+			ui.toggleWindow(state)
+			cc.reset()
 		}
 
 		if ui.hasWindowOpen() {
@@ -46,14 +88,14 @@ func update(state *State, ui *Ui) {
 			}
 		}
 
-		if i.Kind == hook.KeyDown && i.Rawcode < 255 {
-			key := string(int32(i.Rawcode))
-			if isCtrl {
-				if key == "q" {
-					ui.toggleWindow(state)
-				}
-			}
-		}
+		// if i.Kind == hook.KeyDown && i.Rawcode < 255 {
+		// 	key := string(int32(i.Rawcode))
+		// 	if isCtrl {
+		// 		if key == "q" {
+		// 			ui.toggleWindow(state)
+		// 		}
+		// 	}
+		// }
 		// log.Printf("evt: %v\n", i)
 	}
 }

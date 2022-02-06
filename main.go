@@ -23,24 +23,5 @@ func main() {
 	}
 	ui := NewUi()
 
-	// hook.Register(hook.KeyDown, []string{"ctrl", "q"}, func(e hook.Event) {
-	// 	ui.toggleWindow(&state)
-	// })
-
-	// hook.Register(hook.KeyDown, []string{"up"}, func(e hook.Event) {
-	// 	if state.currentOpt > 0 {
-	// 		state.currentOpt -= 1
-	// 	}
-	// })
-
-	// hook.Register(hook.KeyDown, []string{"down"}, func(e hook.Event) {
-	// 	if state.currentOpt < len(state.opts)-1 {
-	// 		state.currentOpt += 1
-	// 	}
-	// })
-
-	// s := hook.Start()
-	// <-hook.Process(s)
-
 	update(&state, ui)
 }
