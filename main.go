@@ -1,17 +1,16 @@
 package main
 
 func main() {
-	state := State{
-		opts: []string{
-			"",
-			":this is my list",
-			":of selected strings",
-			":whatever the fuck goes here",
-			":is what goes here",
-			":yay",
+	state := NewState(
+		map[string]string{
+			"":                        "",
+			"key that is being shown": "expanded value",
+			"key2":                    "another expanded value",
+			"something":               "nothing",
+			"else entirely":           "whatever",
 		},
-	}
+	)
 	ui := NewUi()
 
-	update(&state, ui)
+	update(state, ui)
 }

@@ -6,10 +6,20 @@ import (
 )
 
 type State struct {
+	raw        map[string]string
 	opts       []string
 	currentOpt int
 	filter     string
 	mu         sync.RWMutex
+}
+
+func NewState(raw map[string]string) *State {
+	opts := []string{}
+	for key, _ := range raw {
+		opts = append(opts, key)
+	}
+	state := State{raw: raw, opts: opts}
+	return &state
 }
 
 func (s *State) getFilter() string {
@@ -93,6 +103,7 @@ func (s *State) getSelected() string {
 	defer s.mu.RUnlock()
 
 	flt := s.getFiltered()
-	out := flt[s.getCurrentOpt()]
+	key := flt[s.getCurrentOpt()]
+	out := s.raw[key]
 	return out
 }
