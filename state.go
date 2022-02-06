@@ -14,12 +14,23 @@ type State struct {
 }
 
 func NewState(raw map[string]string) *State {
-	opts := []string{}
-	for key, _ := range raw {
-		opts = append(opts, key)
-	}
-	state := State{raw: raw, opts: opts}
+	state := State{raw: map[string]string{}, opts: []string{}}
+	state.with(raw)
 	return &state
+}
+
+func (s *State) with(raw map[string]string) *State {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for key, value := range raw {
+		if _, found := s.raw[key]; found {
+			continue
+		}
+		s.raw[key] = value
+		s.opts = append(s.opts, key)
+	}
+	return s
 }
 
 func (s *State) getFilter() string {
