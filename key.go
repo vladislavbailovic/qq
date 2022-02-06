@@ -65,37 +65,18 @@ func update(state *State, ui *Ui) {
 			cc.reset()
 		}
 
-		if ui.hasWindowOpen() {
+		if i.Kind == hook.KeyDown && ui.hasWindowOpen() {
 			if i.Rawcode == KeyEnter || i.Rawcode == KeyTab {
 				ui.toggleWindow(state)
-				out := state.opts[state.currentOpt]
-				if state.currentOpt > 0 && len(out) > 0 {
-					ui.systemInteractOut(out)
-				}
+				ui.systemInteractOut(state.getSelected())
 			}
-		}
-
-		if i.Kind == hook.KeyDown {
 			if i.Rawcode == KeyUp {
-				if state.currentOpt > 0 {
-					state.currentOpt -= 1
-				}
+				state.selectPrevious()
 			}
 			if i.Rawcode == KeyDown {
-				if state.currentOpt < len(state.opts)-1 {
-					state.currentOpt += 1
-				}
+				state.selectNext()
 			}
 		}
-
-		// if i.Kind == hook.KeyDown && i.Rawcode < 255 {
-		// 	key := string(int32(i.Rawcode))
-		// 	if isCtrl {
-		// 		if key == "q" {
-		// 			ui.toggleWindow(state)
-		// 		}
-		// 	}
-		// }
 		// log.Printf("evt: %v\n", i)
 	}
 }

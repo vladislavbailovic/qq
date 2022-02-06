@@ -1,15 +1,5 @@
 package main
 
-import (
-	"sync"
-)
-
-type State struct {
-	opts       []string
-	currentOpt int
-	mu         sync.RWMutex
-}
-
 func main() {
 	state := State{
 		opts: []string{

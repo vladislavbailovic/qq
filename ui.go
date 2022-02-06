@@ -55,6 +55,9 @@ func (ui *Ui) renderWindow(state *State) {
 }
 
 func (ui *Ui) systemInteractOut(out string) {
+	if len(out) == 0 {
+		return
+	}
 	robotgo.TypeStr(fmt.Sprintf(" [%s]", out), 25, 10)
 }
 
