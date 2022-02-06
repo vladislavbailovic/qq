@@ -1,12 +1,36 @@
 package main
 
 import (
-	"log"
+	"sync"
 
 	g "github.com/AllenDang/giu"
 )
 
-func renderWindow(state *State) {
+type Ui struct {
+	wnd *g.MasterWindow
+	mu  sync.RWMutex
+}
+
+func (ui *Ui) hasWindowOpen() bool {
+	ui.mu.RLock()
+	defer ui.mu.RUnlock()
+
+	return ui.wnd != nil
+}
+
+func (ui *Ui) toggleWindow(state *State) {
+	ui.mu.Lock()
+	defer ui.mu.Unlock()
+
+	if ui.wnd != nil {
+		ui.wnd.Close()
+		ui.wnd = nil
+	} else {
+		go ui.renderWindow(state)
+	}
+}
+
+func (ui *Ui) renderWindow(state *State) {
 
 	loop := func() {
 		selectables := []g.Widget{}
@@ -21,10 +45,14 @@ func renderWindow(state *State) {
 		g.SingleWindow().Layout(
 			selectables...,
 		)
-		log.Printf("still being updated: %v", state.wnd)
 	}
 
 	flags := g.MasterWindowFlagsFloating | g.MasterWindowFlagsFrameless | g.MasterWindowFlagsNotResizable
-	state.wnd = g.NewMasterWindow("Hello world", 400, 200, flags)
-	state.wnd.Run(loop)
+	ui.wnd = g.NewMasterWindow("Hello world", 400, 200, flags)
+	ui.wnd.Run(loop)
+}
+
+func NewUi() *Ui {
+	ui := Ui{}
+	return &ui
 }

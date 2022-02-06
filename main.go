@@ -1,11 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"os"
 	"sync"
 
-	g "github.com/AllenDang/giu"
 	"github.com/go-vgo/robotgo"
 	hook "github.com/robotn/gohook"
 )
@@ -13,102 +12,65 @@ import (
 type State struct {
 	opts       []string
 	currentOpt int
-	wnd        *g.MasterWindow
 	mu         sync.RWMutex
 }
 
-func (s *State) hasWindowOpen() bool {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	return s.wnd != nil
-}
-
 func main() {
-	wg := sync.WaitGroup{}
-
 	state := State{
 		opts: []string{
 			"",
-			"this is my list",
-			"of selected strings",
-			"whatever the fuck goes here",
-			"is what goes here",
-			"yay",
+			":this is my list",
+			":of selected strings",
+			":whatever the fuck goes here",
+			":is what goes here",
+			":yay",
 		},
 	}
+	ui := NewUi()
+
+	s := hook.Start()
+
+	isCtrl := false
 	for {
-		log.Println("next")
-		wg.Add(1)
+		i := <-s
 
-		go func() {
-			s := hook.Start()
+		if i.Rawcode == KeyCtrl {
+			isCtrl = i.Kind == hook.KeyDown
+		}
 
-			go func() {
-				isCtrl := false
-				for {
-					i := <-s
-
-					if i.Rawcode == KeyCtrl {
-						isCtrl = i.Kind == hook.KeyDown
-					}
-
-					if state.hasWindowOpen() {
-						if i.Rawcode == KeyEnter || i.Rawcode == KeyTab {
-							hook.End()
-							state.wnd.Close()
-							state.wnd = nil
-							log.Println("done")
-							break
-						}
-					}
-
-					if i.Kind == hook.KeyDown {
-						if i.Rawcode == KeyUp {
-							if state.currentOpt > 0 {
-								state.currentOpt -= 1
-							}
-							log.Println("up", state.currentOpt)
-						}
-						if i.Rawcode == KeyDown {
-							if state.currentOpt < len(state.opts)-1 {
-								state.currentOpt += 1
-							}
-							log.Println("down", state.currentOpt)
-						}
-					}
-
-					if i.Kind == hook.KeyDown && i.Rawcode < 255 {
-						key := string(int32(i.Rawcode))
-						if isCtrl {
-							if key == "c" || key == "q" {
-								os.Exit(0)
-							} else if !state.hasWindowOpen() && "a" == key {
-								go renderWindow(&state)
-								log.Printf("Opening")
-							}
-						}
-						// log.Printf("evt: %v\n", string(i.Rawcode))
-					}
-					// log.Printf("evt: %v\n", i)
+		if ui.hasWindowOpen() {
+			if i.Rawcode == KeyEnter || i.Rawcode == KeyTab {
+				ui.toggleWindow(&state)
+				out := state.opts[state.currentOpt]
+				if state.currentOpt > 0 && len(out) > 0 {
+					robotgo.TypeStr(fmt.Sprintf(" [%s]", out), 25, 10)
+					log.Println(out)
 				}
-				// time.Sleep(250 * time.Millisecond)
-				wg.Done()
-			}()
-			// state.currentOpt = 0
-			// robotgo.TypeStr(state.opts[state.currentOpt])
-			defer robotgo.TypeStr(state.opts[state.currentOpt])
-			// time.Sleep(250 * time.Millisecond)
-		}()
+			}
+		}
 
-		// go func() {
-		// 	flags := g.MasterWindowFlagsFloating | g.MasterWindowFlagsFrameless | g.MasterWindowFlagsNotResizable
-		// 	wnd = g.NewMasterWindow("Hello world", 400, 200, flags)
-		// 	wnd.Run(loop)
-		// }()
+		if i.Kind == hook.KeyDown {
+			if i.Rawcode == KeyUp {
+				if state.currentOpt > 0 {
+					state.currentOpt -= 1
+				}
+			}
+			if i.Rawcode == KeyDown {
+				if state.currentOpt < len(state.opts)-1 {
+					state.currentOpt += 1
+				}
+			}
+		}
 
-		wg.Wait()
+		if i.Kind == hook.KeyDown && i.Rawcode < 255 {
+			key := string(int32(i.Rawcode))
+			if isCtrl {
+				if key == "q" {
+					ui.toggleWindow(&state)
+				}
+			}
+			// log.Printf("evt: %v\n", string(i.Rawcode))
+		}
+		// log.Printf("evt: %v\n", i)
 	}
-
-	defer robotgo.TypeStr(state.opts[state.currentOpt])
 }
