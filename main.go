@@ -1,12 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"sync"
-
-	"github.com/go-vgo/robotgo"
-	hook "github.com/robotn/gohook"
 )
 
 type State struct {
@@ -28,49 +23,24 @@ func main() {
 	}
 	ui := NewUi()
 
-	s := hook.Start()
+	// hook.Register(hook.KeyDown, []string{"ctrl", "q"}, func(e hook.Event) {
+	// 	ui.toggleWindow(&state)
+	// })
 
-	isCtrl := false
-	for {
-		i := <-s
+	// hook.Register(hook.KeyDown, []string{"up"}, func(e hook.Event) {
+	// 	if state.currentOpt > 0 {
+	// 		state.currentOpt -= 1
+	// 	}
+	// })
 
-		if i.Rawcode == KeyCtrl {
-			isCtrl = i.Kind == hook.KeyDown
-		}
+	// hook.Register(hook.KeyDown, []string{"down"}, func(e hook.Event) {
+	// 	if state.currentOpt < len(state.opts)-1 {
+	// 		state.currentOpt += 1
+	// 	}
+	// })
 
-		if ui.hasWindowOpen() {
-			if i.Rawcode == KeyEnter || i.Rawcode == KeyTab {
-				ui.toggleWindow(&state)
-				out := state.opts[state.currentOpt]
-				if state.currentOpt > 0 && len(out) > 0 {
-					robotgo.TypeStr(fmt.Sprintf(" [%s]", out), 25, 10)
-					log.Println(out)
-				}
-			}
-		}
+	// s := hook.Start()
+	// <-hook.Process(s)
 
-		if i.Kind == hook.KeyDown {
-			if i.Rawcode == KeyUp {
-				if state.currentOpt > 0 {
-					state.currentOpt -= 1
-				}
-			}
-			if i.Rawcode == KeyDown {
-				if state.currentOpt < len(state.opts)-1 {
-					state.currentOpt += 1
-				}
-			}
-		}
-
-		if i.Kind == hook.KeyDown && i.Rawcode < 255 {
-			key := string(int32(i.Rawcode))
-			if isCtrl {
-				if key == "q" {
-					ui.toggleWindow(&state)
-				}
-			}
-			// log.Printf("evt: %v\n", string(i.Rawcode))
-		}
-		// log.Printf("evt: %v\n", i)
-	}
+	update(&state, ui)
 }
