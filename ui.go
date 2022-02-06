@@ -35,8 +35,11 @@ func (ui *Ui) toggleWindow(state *State) {
 func (ui *Ui) renderWindow(state *State) {
 
 	loop := func() {
-		selectables := []g.Widget{}
-		for idx, opt := range state.opts {
+		input := g.Label(state.getFilter())
+		selectables := []g.Widget{
+			input,
+		}
+		for idx, opt := range state.getFiltered() {
 			sel := g.Selectable(opt)
 			if idx == state.currentOpt {
 				sel.Selected(true)

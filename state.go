@@ -1,11 +1,58 @@
 package main
 
-import "sync"
+import (
+	"strings"
+	"sync"
+)
 
 type State struct {
 	opts       []string
 	currentOpt int
+	filter     string
 	mu         sync.RWMutex
+}
+
+func (s *State) getFilter() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	return s.filter
+}
+
+func (s *State) getFiltered() []string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	out := []string{}
+	for _, item := range s.opts {
+		if strings.Contains(item, s.filter) {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+func (s *State) updateFilter(flt string) {
+	s.mu.Lock()
+	s.mu.Unlock()
+
+	s.filter = flt
+}
+
+func (s *State) pushToFilter(flt string) {
+	s.mu.Lock()
+	s.mu.Unlock()
+
+	s.filter += flt
+}
+
+func (s *State) popFromFilter() {
+	s.mu.Lock()
+	s.mu.Unlock()
+
+	if len(s.filter) > 0 {
+		s.filter = s.filter[:len(s.filter)-1]
+	}
 }
 
 func (s *State) selectPrevious() {
