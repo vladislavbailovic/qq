@@ -71,7 +71,7 @@ func update(state *State, ui *Ui) {
 		switch i.Rawcode {
 		case KeyTab, KeyEnter:
 			ui.toggleWindow(state)
-			ui.systemInteractOut(state.getSelected())
+			systemInteractOut(state.getSelected())
 		case KeyUp:
 			state.selectPrevious()
 		case KeyDown:
