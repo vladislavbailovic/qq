@@ -80,7 +80,7 @@ func update(state *State, ui *Ui) {
 			state.popFromFilter()
 		default:
 			if i.Rawcode < 255 {
-				state.pushToFilter(string(i.Rawcode))
+				state.pushToFilter(rune(i.Rawcode))
 			}
 		}
 		// log.Printf("evt: %v\n", i)

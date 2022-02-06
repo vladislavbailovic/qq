@@ -60,11 +60,11 @@ func (s *State) updateFilter(flt string) {
 	s.filter = flt
 }
 
-func (s *State) pushToFilter(flt string) {
+func (s *State) pushToFilter(flt rune) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.filter += flt
+	s.filter += string(flt)
 }
 
 func (s *State) popFromFilter() {
