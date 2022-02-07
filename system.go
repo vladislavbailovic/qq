@@ -12,8 +12,9 @@ import (
 type kbdDelay int
 
 const (
-	DelayInitial kbdDelay = 25
-	DelayTyping  kbdDelay = 10
+	DelayTyping  kbdDelay = 5
+	DelayInitial kbdDelay = 50 // Not sure what this does
+	DelayTap     kbdDelay = 10
 )
 
 func systemInteractOut(raw string) {
@@ -25,12 +26,13 @@ func systemInteractOut(raw string) {
 	for idx, out := range lines {
 		if idx == 0 {
 			// Idk why we strip first 1? chars on first line
-			out = fmt.Sprintf(" %s", out)
+			// Issue: https://github.com/go-vgo/robotgo/issues/315
+			out = fmt.Sprintf("  %s", out)
 		}
-		robotgo.TypeStr(out, float64(DelayInitial), float64(DelayTyping))
+		robotgo.TypeStr(out, float64(DelayTyping), float64(DelayInitial))
 		if len(lines) > 1 {
 			robotgo.KeyTap("\n")
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(time.Duration(DelayTap) * time.Millisecond)
 		}
 	}
 }
