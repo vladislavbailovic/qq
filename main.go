@@ -7,7 +7,8 @@ func reloadState(state *State) *State {
 		with(PastHourTimeList()).
 		with(NextHourTimeList()).
 		with(ClipboardTimeList()).
-		with(ClipboardBase64List())
+		with(ClipboardBase64List()).
+		with(StaticList())
 	return state
 }
 

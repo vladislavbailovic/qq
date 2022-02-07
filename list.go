@@ -62,3 +62,16 @@ func ClipboardBase64List() map[string]string {
 	}
 	return result
 }
+
+func StaticList() map[string]string {
+	return map[string]string{
+		"static longish text": "So this is my text\nwithsome newlines\n\tand tabs<-",
+		"static long text": `Within the format string, the underscores in "_2" and "__2" represent spaces that may be replaced by digits if the following number has multiple digits, for compatibility with fixed-width Unix time formats. A leading zero represents a zero-padded value.
+
+		The formats and 002 are space-padded and zero-padded three-character day of year; there is no unpadded day of year format.
+
+		A comma or decimal point followed by one or more zeros represents a fractional second, printed to the given number of decimal places. A comma or decimal point followed by one or more nines represents a fractional second, printed to the given number of decimal places, with trailing zeros removed. For example "15:04:05,000" or "15:04:05.000" formats or parses with millisecond precision.
+
+		Some valid layouts are invalid time values for time.Parse, due to formats such as _ for space padding and Z for zone information.`,
+	}
+}
