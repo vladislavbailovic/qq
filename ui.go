@@ -26,6 +26,7 @@ func (ui *Ui) toggleWindow(state *State) {
 		ui.wnd.Close()
 		ui.wnd = nil
 	} else {
+		reloadState(state)
 		go ui.renderWindow(state)
 	}
 }

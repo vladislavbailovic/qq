@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
+	"strconv"
 	"time"
 )
 
@@ -27,6 +27,25 @@ func NextHourTimeList() map[string]string {
 	return timeList("hour from now", time.Now().Add(3600*time.Second))
 }
 
+func ClipboardTimeList() map[string]string {
+	result := map[string]string{}
+	what := systemGetClipboard()
+	if len(what) == 0 {
+		return result
+	}
+
+	tm, err := strconv.Atoi(what)
+	if err != nil {
+		return result
+	}
+
+	if tm/int(time.Millisecond) > 10000 {
+		tm = tm / (1000 * int(time.Millisecond))
+	}
+
+	return timeList("clipboard", time.Unix(int64(tm), 0))
+}
+
 func ClipboardBase64List() map[string]string {
 	result := map[string]string{}
 	what := systemGetClipboard()
@@ -38,9 +57,7 @@ func ClipboardBase64List() map[string]string {
 		result["clipboard base64 encode"] = val
 	}
 
-	if val, err := base64.StdEncoding.DecodeString(what); err != nil {
-		log.Printf("base64 decode error: %v\n", err)
-	} else {
+	if val, err := base64.StdEncoding.DecodeString(what); err == nil {
 		result["clipboard base64 decode"] = string(val)
 	}
 	return result

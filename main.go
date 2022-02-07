@@ -1,26 +1,19 @@
 package main
 
-func main() {
-	state := NewState(
-		// TODO: scroll lists
-		map[string]string{
-			"key that is being shown": "expanded value",
-			"key2":                    "another expanded value",
-			"something":               "nothing",
-			"else entirely":           "whatever",
-			"more":                    "whatever",
-			"stuff":                   "whatever",
-			"here":                    "whatever",
-			"to":                      "whatever",
-			"see":                     "whatever",
-			"if it will":              "whatever",
-			"scroll":                  "whatever",
-		}).
+func reloadState(state *State) *State {
+	// TODO: templates and more lists
+	state.clear().
 		with(CurrentTimeList()).
 		with(PastHourTimeList()).
 		with(NextHourTimeList()).
+		with(ClipboardTimeList()).
 		with(ClipboardBase64List())
-	// TODO: templates and more lists
+	return state
+}
+
+func main() {
+	state := reloadState(
+		NewState(map[string]string{}))
 	ui := NewUi()
 
 	update(state, ui)

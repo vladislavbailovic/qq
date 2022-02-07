@@ -19,6 +19,17 @@ func NewState(raw map[string]string) *State {
 	return &state
 }
 
+func (s *State) clear() *State {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.raw = map[string]string{}
+	s.opts = []string{}
+	s.currentOpt = 0
+	s.filter = ""
+	return s
+}
+
 func (s *State) with(raw map[string]string) *State {
 	s.mu.Lock()
 	defer s.mu.Unlock()
