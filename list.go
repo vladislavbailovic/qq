@@ -40,7 +40,7 @@ func ClipboardTimeList() map[string]string {
 	}
 
 	if tm/int(time.Millisecond) > 10000 {
-		tm = tm / (1000 * int(time.Millisecond))
+		tm = tm / 1000
 	}
 
 	return timeList("clipboard", time.Unix(int64(tm), 0))

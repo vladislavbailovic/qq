@@ -28,3 +28,10 @@ func systemGetClipboard() string {
 	}
 	return str
 }
+
+func systemSetClipboard(what string) {
+	err := robotgo.WriteAll(what)
+	if err != nil {
+		log.Printf("unable to write to clipboard: %v\n", err)
+	}
+}

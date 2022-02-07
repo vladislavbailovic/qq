@@ -18,6 +18,26 @@ func TestNextHourTimeList(t *testing.T) {
 	testTimeList(t, "hour from now", time.Now().Add(1*3600*time.Second), NextHourTimeList())
 }
 
+func TestClipboardTimeListInSeconds(t *testing.T) {
+	clp := systemGetClipboard()
+	ts := time.Now()
+	systemSetClipboard(fmt.Sprintf("%d", ts.Unix()))
+
+	testTimeList(t, "clipboard", ts, ClipboardTimeList())
+
+	systemSetClipboard(clp)
+}
+
+func TestClipboardTimeListInMilliseconds(t *testing.T) {
+	clp := systemGetClipboard()
+	ts := time.Now()
+	systemSetClipboard(fmt.Sprintf("%d", ts.UnixMilli()))
+
+	testTimeList(t, "clipboard", ts, ClipboardTimeList())
+
+	systemSetClipboard(clp)
+}
+
 func testTimeList(t *testing.T, name string, ts time.Time, actual map[string]string) {
 	expectedUnix := fmt.Sprintf("%d", ts.Unix())
 	expectedRFC339Local := ts.Local().Format(time.RFC3339)
