@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	hook "github.com/robotn/gohook"
 )
 
@@ -23,8 +25,9 @@ const (
 )
 
 type ctrlCounter struct {
-	hit   int
-	state counterState
+	hit     int
+	state   counterState
+	timeout *time.Timer
 }
 
 func (cc *ctrlCounter) update(in hook.Event) {
@@ -36,12 +39,29 @@ func (cc *ctrlCounter) update(in hook.Event) {
 		return
 	}
 
-	if !cc.isDone() {
-		cc.state = StatePending
-		cc.hit += 1
-		if cc.hit > 2 {
-			cc.state = StateDone
+	if cc.isDone() {
+		if cc.timeout != nil {
+			cc.timeout.Stop()
+			cc.timeout = nil
 		}
+		return
+	}
+
+	cc.state = StatePending
+	cc.hit += 1
+	if cc.hit > 2 {
+		cc.state = StateDone
+		cc.timeout.Stop()
+		cc.timeout = nil
+		return
+	}
+
+	if cc.timeout != nil {
+		cc.timeout.Reset(time.Second)
+	} else {
+		cc.timeout = time.AfterFunc(time.Second, func() {
+			cc.reset()
+		})
 	}
 }
 
