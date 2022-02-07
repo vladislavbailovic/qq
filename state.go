@@ -98,6 +98,14 @@ func (s *State) selectNext() {
 	}
 }
 
+func (s *State) reset() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.currentOpt = 0
+	s.filter = ""
+}
+
 func (s *State) getCurrentOpt() int {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

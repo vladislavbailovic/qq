@@ -11,6 +11,7 @@ const (
 	KeyBackspace uint16 = 65288
 	KeyUp        uint16 = 65362
 	KeyDown      uint16 = 65364
+	KeyEsc       uint16 = 65307
 )
 
 type counterState int
@@ -71,7 +72,12 @@ func update(state *State, ui *Ui) {
 		switch i.Rawcode {
 		case KeyTab, KeyEnter:
 			ui.toggleWindow(state)
-			systemInteractOut(state.getSelected())
+			out := state.getSelected()
+			state.reset()
+			systemInteractOut(out)
+		case KeyEsc:
+			state.reset()
+			ui.toggleWindow(state)
 		case KeyUp:
 			state.selectPrevious()
 		case KeyDown:
