@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/go-vgo/robotgo"
 )
@@ -18,4 +19,12 @@ func systemInteractOut(out string) {
 		return
 	}
 	robotgo.TypeStr(fmt.Sprintf(" [%s]", out), float64(DelayInitial), float64(DelayTyping))
+}
+
+func systemGetClipboard() string {
+	str, err := robotgo.ReadAll()
+	if err != nil {
+		log.Printf("unable to read from clipboard: %v\n", err)
+	}
+	return str
 }

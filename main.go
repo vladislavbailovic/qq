@@ -18,7 +18,8 @@ func main() {
 		}).
 		with(CurrentTimeList()).
 		with(PastHourTimeList()).
-		with(NextHourTimeList())
+		with(NextHourTimeList()).
+		with(ClipboardBase64List())
 	// TODO: templates and more lists
 	ui := NewUi()
 
